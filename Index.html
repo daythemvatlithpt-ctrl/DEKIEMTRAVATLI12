@@ -88,7 +88,8 @@
           <i class="fa-solid fa-people-roof"></i> Phụ huynh
         </button>
 
-        <button onclick="openLoginModal('teacher')" class="text-xs font-semibold px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg shadow transition flex items-center gap-1.5 cursor-pointer">
+        <!-- Nút Giáo Viên ẩn danh / Bảo mật tuyệt đối (Triple click nhanh để mở) -->
+        <button id="btnTeacherSecure" onclick="handleTeacherButtonAction(event)" class="text-xs font-semibold px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg shadow transition flex items-center gap-1.5 cursor-pointer" title="Khu vực giáo viên">
           <i class="fa-solid fa-chalkboard-user"></i> Giáo viên
         </button>
 
@@ -391,30 +392,30 @@
             <h3 class="font-extrabold text-amber-900 text-base flex items-center gap-2">
               <i class="fa-solid fa-stopwatch text-rose-600"></i> Bảng Điều Khiển Kiểm Tra Vấn Đáp & Quay Số
             </h3>
-            <span class="text-xs bg-amber-200 text-amber-900 font-extrabold px-2.5 py-1 rounded-lg">Giáo viên: Quay số &rarr; Nhập tên &rarr; Chọn bài &rarr; Chọn gói</span>
+            <span class="text-xs bg-amber-200 text-amber-900 font-extrabold px-2.5 py-1 rounded-lg">Thứ tự: Quay số &rarr; Điền tên &rarr; Chọn nguồn bài &rarr; Chọn gói</span>
           </div>
           <p class="text-xs text-slate-600">Thầy thực hiện theo đúng thứ tự bố trí dưới đây để bắt đầu bài thi vấn đáp nghiêm ngặt cho học sinh:</p>
           
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-2xl border border-amber-200">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-2xl border border-amber-200">
             
             <!-- BƯỚC 1: QUAY SỐ -->
             <div class="space-y-2">
-              <label class="block text-xs font-black text-amber-900 uppercase">Bước 1: Quay Số Ngẫu Nhiên (1 &rarr; 35)</label>
+              <label class="block text-xs font-black text-amber-900 uppercase">Bước 1: Quay Số (1 &rarr; 35)</label>
               <div class="flex items-center gap-2">
                 <div id="drawnNumberDisplay" class="flex-1 bg-amber-100 border border-amber-300 text-amber-900 font-mono font-black text-center py-2.5 rounded-xl text-lg">
                   --
                 </div>
-                <button type="button" onclick="triggerRandomStudentDraw()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow transition cursor-pointer">
+                <button type="button" onclick="triggerRandomStudentDraw()" class="px-3 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow transition cursor-pointer">
                   <i class="fa-solid fa-dice"></i> Quay Số
                 </button>
               </div>
-              <p class="text-[10px] text-slate-500 italic">Kiểm soát chống lặp quá 2 lần trong ngày.</p>
+              <p class="text-[10px] text-slate-500 italic">Chống lặp quá 2 lần trong ngày.</p>
             </div>
 
             <!-- BƯỚC 2: HỌ TÊN VÀ LỚP -->
             <div class="space-y-2">
-              <label class="block text-xs font-black text-amber-900 uppercase">Bước 2: Điền Họ Tên & Lớp Học</label>
-              <input type="text" id="oralStudentName" placeholder="Họ và tên học sinh (hoặc STT quay số)" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold mb-2">
+              <label class="block text-xs font-black text-amber-900 uppercase">Bước 2: Họ Tên & Lớp</label>
+              <input type="text" id="oralStudentName" placeholder="Họ tên học sinh..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold mb-1">
               <select id="oralStudentClass" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-blue-800 bg-white cursor-pointer">
                 <option value="12A">12A</option>
                 <option value="12B">12B</option>
@@ -423,26 +424,27 @@
               </select>
             </div>
 
-            <!-- BƯỚC 3 & 4: NGUỒN BÀI & GÓI THI -->
+            <!-- BƯỚC 3: NGUỒN BÀI (CHỌN NHIỀU) -->
             <div class="space-y-2">
-              <label class="block text-xs font-black text-amber-900 uppercase">Bước 3 & 4: Nguồn Bài & Gói Vấn Đáp</label>
-              <div id="oralSourceCheckboxesContainer" class="max-h-24 overflow-y-auto space-y-1 p-1.5 border border-slate-200 rounded-xl bg-slate-50 text-[11px]">
-                <!-- Render động checkbox các bài -->
+              <label class="block text-xs font-black text-amber-900 uppercase">Bước 3: Nguồn Bài (Chọn nhiều)</label>
+              <div id="oralSourceCheckboxesContainer" class="max-h-28 overflow-y-auto space-y-1 p-1.5 border border-slate-200 rounded-xl bg-slate-50 text-[11px]">
+                <!-- Render động checkbox -->
               </div>
-              <select id="oralPackageSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-rose-700 bg-white cursor-pointer">
-                <option value="pack2">Gói 2 Câu Vấn Đáp (30s/câu - 10đ)</option>
-                <option value="pack4">Gói 4 Câu Vấn Đáp (25s/câu - 10đ)</option>
-                <option value="pack5">Gói 5 Câu Vấn Đáp (25s/câu - 10đ)</option>
-              </select>
             </div>
 
-          </div>
+            <!-- BƯỚC 4: GÓI VẤN ĐÁP -->
+            <div class="space-y-2">
+              <label class="block text-xs font-black text-amber-900 uppercase">Bước 4: Gói Vấn Đáp</label>
+              <select id="oralPackageSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-rose-700 bg-white cursor-pointer mb-2">
+                <option value="pack2">Gói 2 Câu (30s/câu - 10đ)</option>
+                <option value="pack4">Gói 4 Câu (25s/câu - 10đ)</option>
+                <option value="pack5">Gói 5 Câu (25s/câu - 10đ)</option>
+              </select>
+              <button onclick="startOralExamSession()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-black text-xs rounded-xl shadow transition cursor-pointer">
+                <i class="fa-solid fa-play mr-1"></i> BẮT ĐẦU THI
+              </button>
+            </div>
 
-          <!-- NÚT KHỞI CHẠY VẤN ĐÁP -->
-          <div class="text-center pt-1">
-            <button onclick="startOralExamSession()" class="px-8 py-3 bg-rose-600 hover:bg-rose-500 text-white font-black text-xs rounded-xl shadow-lg transition transform active:scale-95 cursor-pointer">
-              <i class="fa-solid fa-play mr-1.5"></i> BẮT ĐẦU THI VẤN ĐÁP CHO HỌC SINH NÀY
-            </button>
           </div>
         </div>
 
@@ -603,10 +605,10 @@
     let authRole = null;
     let editorCurrentModuleId = 'b1';
 
-    const STORAGE_KEY_QUESTIONS = 'PHYSICS12_MASTER_STORAGE_QUESTIONS_V8';
-    const STORAGE_KEY_INDIV = 'PHYSICS12_MASTER_INDIVIDUAL_RESULTS_V8';
-    const STORAGE_KEY_GROUP = 'PHYSICS12_MASTER_GROUP_RESULTS_V8';
-    const STORAGE_KEY_ORAL_LOGS = 'PHYSICS12_ORAL_DAILY_TRACKING_LOGS_V3';
+    const STORAGE_KEY_QUESTIONS = 'PHYSICS12_MASTER_STORAGE_QUESTIONS_V9';
+    const STORAGE_KEY_INDIV = 'PHYSICS12_MASTER_INDIVIDUAL_RESULTS_V9';
+    const STORAGE_KEY_GROUP = 'PHYSICS12_MASTER_GROUP_RESULTS_V9';
+    const STORAGE_KEY_ORAL_LOGS = 'PHYSICS12_ORAL_DAILY_TRACKING_LOGS_V4';
 
     /* =====================================================================
        CÁC HÀM ĐIỀU HƯỚNG GIAO DIỆN & MODAL
@@ -738,6 +740,33 @@
       document.getElementById('screenLogin').classList.remove('hidden');
     }
 
+    // BẢO MẬT TUYỆT ĐỐI & ẨN MẬT KHẨU GIÁO VIÊN (TRIPLE CLICK HOẶC SECRET PIN HÌNH THỨC ẨN)
+    let teacherClickCount = 0;
+    let teacherClickTimer = null;
+
+    function handleTeacherButtonAction(event) {
+      teacherClickCount++;
+      if (teacherClickCount === 1) {
+        teacherClickTimer = setTimeout(() => {
+          teacherClickCount = 0;
+          // Click 1 lần: Mở bảng nhập mật khẩu an toàn
+          openLoginModal('teacher');
+        }, 400);
+      } else if (teacherClickCount >= 3) {
+        clearTimeout(teacherClickTimer);
+        teacherClickCount = 0;
+        // Triple click mở thẳng không cần hỏi
+        openModal('modalAuth');
+        authRole = 'teacher';
+        const title = document.getElementById('modalAuthTitle');
+        const desc = document.getElementById('modalAuthDesc');
+        if (title) title.innerHTML = `<i class="fa-solid fa-chalkboard-user text-amber-500 mr-1.5"></i> Đăng nhập Quản trị Giáo viên`;
+        if (desc) desc.textContent = "Khu vực bảo mật cao. Nhập mật khẩu giáo viên:";
+        const btnConfirm = document.getElementById('btnConfirmAuth');
+        if (btnConfirm) btnConfirm.onclick = verifyAuthPassword;
+      }
+    }
+
     function openLoginModal(role) {
       authRole = role;
       const modal = document.getElementById('modalAuth');
@@ -750,11 +779,11 @@
       if (err) err.classList.add('hidden');
 
       if (role === 'teacher') {
-        if (title) title.innerHTML = `<i class="fa-solid fa-chalkboard-user text-amber-500 mr-1.5"></i> Đăng nhập Giáo viên`;
-        if (desc) desc.textContent = "Nhập mật khẩu Giáo viên (Mặc định: 123) để quản lý kết quả, quay số vấn đáp và chỉnh sửa đề thi.";
+        if (title) title.innerHTML = `<i class="fa-solid fa-chalkboard-user text-amber-500 mr-1.5"></i> Đăng nhập Quản trị`;
+        if (desc) desc.textContent = "Nhập mật khẩu Quản trị viên giáo viên:";
       } else {
         if (title) title.innerHTML = `<i class="fa-solid fa-people-roof text-emerald-600 mr-1.5"></i> Đăng nhập Phụ huynh`;
-        if (desc) desc.textContent = "Nhập mật khẩu Phụ huynh (Mặc định: 123456) để theo dõi kết quả học tập.";
+        if (desc) desc.textContent = "Nhập mật khẩu Phụ huynh (Mặc định: 123456).";
       }
 
       const btnConfirm = document.getElementById('btnConfirmAuth');
@@ -781,7 +810,7 @@
           playGreetingSpeech(false);
           setupDashboard('parent');
         } else {
-          err.classList.add('hidden');
+          err.classList.remove('hidden');
         }
       }
     }
@@ -2199,6 +2228,57 @@
         }
       });
     });
+
+    // Xử lý nộp bài thi chuẩn
+    window.handleStartExam = function() {
+      const nameInput = document.getElementById('inputStudentName').value.trim();
+      const classSelect = document.getElementById('selectStudentClass').value;
+      const pass = document.getElementById('inputExamPass').value.trim();
+
+      const isIndiv = !document.getElementById('formIndividual').classList.contains('hidden');
+
+      if (isIndiv) {
+        if (!nameInput) {
+          showAlertModal("Lưu ý", "Vui lòng nhập Họ và Tên của em!");
+          return;
+        }
+        if (pass !== "123456") {
+          showAlertModal("Sai mật khẩu", "Mật khẩu vào thi chưa đúng! (Mặc định: 123456)");
+          return;
+        }
+        activeUser = {
+          type: 'individual',
+          name: nameInput,
+          studentClass: classSelect,
+          displayName: `${nameInput} (${classSelect})`
+        };
+      } else {
+        const grp = document.getElementById('selectGroupId').value;
+        const members = document.getElementById('inputGroupMembers').value.trim();
+        if (!members) {
+          showAlertModal("Lưu ý", "Vui lòng nhập tên các thành viên trong nhóm!");
+          return;
+        }
+        activeUser = {
+          type: 'group',
+          group: grp,
+          members: members,
+          displayName: `${grp} (${members})`
+        };
+      }
+
+      playApplauseSound();
+      triggerConfettiShower();
+      playGreetingSpeech(true);
+
+      document.getElementById('screenLogin').classList.add('hidden');
+      document.getElementById('screenExam').classList.remove('hidden');
+      document.getElementById('userInfoHeader').classList.remove('hidden');
+      document.getElementById('userDisplayName').textContent = activeUser.displayName;
+      document.getElementById('btnLogout').classList.remove('hidden');
+
+      startNewExam(selectedModuleId);
+    };
   </script>
 </body>
 </html>
